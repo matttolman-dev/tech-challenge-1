@@ -1,4 +1,6 @@
-(ns loanpro-interview.core)
+(ns loanpro-interview.core
+  )
+
 
 (defn foo
   "I don't do a whole lot."
