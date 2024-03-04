@@ -12,6 +12,9 @@
                  ;  (e.g. AWS Loadbalancer, nginx, Apache, etc.)
                  [http-kit/http-kit "2.7.0"]
 
+                 ; Get default ring middleware
+                 [ring/ring "1.11.0"]
+
                  ; Server router
                  ; I like this one since it's data-based
                  ; The data-based nature makes it easier to
@@ -45,8 +48,20 @@
                  ; Up and down migrations can be provided
                  [ragtime "0.8.0"]
 
-                 ; Logging library
-                 [org.clojure/tools.logging "1.3.0"]]
+                 ; For configuration management
+                 [com.grammarly/omniconf "0.4.3"]
+
+                 ; For reponse formatting
+                 [metosin/muuntaja "0.6.8"]
+
+                 ; Logging libraries
+                 [ch.qos.logback/logback-classic "1.5.1"]
+                 [org.slf4j/osgi-over-slf4j "2.0.12"]
+                 [org.slf4j/log4j-over-slf4j "2.0.12"]
+                 [org.slf4j/jcl-over-slf4j "2.0.12"]
+                 [org.slf4j/jul-to-slf4j "2.0.12"]
+                 [org.slf4j/slf4j-api "2.0.12"]]
   :repl-options {:init-ns loanpro-interview.core}
   :aliases {"migrate" ["run" "-m" "loanpro-interview.db/migrate"]
-            "rollback" ["run" "-m" "loanpro-interview.db/rollback"]})
+            "rollback" ["run" "-m" "loanpro-interview.db/rollback"]
+            "db-reset" ["run" "-m" "loanpro-interview.db/reset"]})
