@@ -7,21 +7,25 @@
             [omniconf.core :as cfg]
             [reitit.ring :as ring]
             [ring.middleware.session]
+            [ksuid.core :as ksuid]
             [reitit.ring.middleware.parameters :as parameters]
             [ring.middleware.session.cookie]
             [clojure.tools.logging :as log])
   (:import (java.util.concurrent Executors TimeUnit)))
 
 ; Defining as a method so that changes to routes are reloaded in the REPL on server restart
-(defn app [] (ring/ring-handler
-               (ring/router
-                 ; Because reitit works with data, we can simply nest routes from other files to get our full router
-                 ["/"
-                  (api/routes)]
-                 ; Global middleware
-                 {:data {:coercion   reitit.coercion.spec/coercion
-                         :muuntaja   m/instance
-                         :middleware [parameters/parameters-middleware]}})))
+(defn app
+  ([] (app db/get-connection #(ksuid/to-string (ksuid/new-random))))
+  ([db-conn-provider guid-provider]
+   (ring/ring-handler
+     (ring/router
+       ; Because reitit works with data, we can simply nest routes from other files to get our full router
+       ["/"
+        (api/routes db-conn-provider guid-provider)]
+       ; Global middleware
+       {:data {:coercion   reitit.coercion.spec/coercion
+               :muuntaja   m/instance
+               :middleware [parameters/parameters-middleware]}}))))
 
 ; Defining this for REPL interactions (allows stopping/starting server)
 (defonce server (atom nil))
