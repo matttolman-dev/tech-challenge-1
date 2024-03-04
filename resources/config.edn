@@ -1,0 +1,3 @@
+{
+ :session {:key "ABCDEF0123456789"}
+ :users {:pwd-key "pbkdf2 key"}}

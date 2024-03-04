@@ -1,0 +1,11 @@
+DROP TABLE if exists auth_events;
+--;;
+DROP TABLE if exists sessions;
+--;;
+DROP TABLE if exists transactions;
+--;;
+DROP TABLE if exists operations;
+--;;
+DROP TABLE if exists users;
+--;;
+DROP TABLE if exists statuses;

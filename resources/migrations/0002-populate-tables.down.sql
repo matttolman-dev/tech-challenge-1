@@ -1,0 +1,3 @@
+DELETE FROM operations WHERE id >= 1 AND id <= 6;
+--;;
+DELETE FROM users WHERE id = '000000000000000000000000000';
