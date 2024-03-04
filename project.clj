@@ -32,7 +32,13 @@
                  [metosin/reitit "0.7.0-alpha7"]
 
                  ; Database connector
-                 [com.github.seancorfield/next.jdbc "1.3.909"]
+                 [org.clojure/java.jdbc "0.7.12"]
+
+                 ; Query management
+                 [yesql "0.5.3"]
+
+                 ; JSON parsing
+                 [ring/ring-json "0.5.1"]
 
                  ; Using SQLite for this sample project
                  ; Makes setting up integration tests easier
@@ -44,6 +50,16 @@
                  ;   (or the AWS Aurora flavor of PostgreSQL)
                  [org.xerial/sqlite-jdbc "3.45.1.0"]
 
+                 ; KSUID (id generator)
+                 [com.github.toanphan19/ksuid "0.2.0"]
+
+                 ; Data validation library
+                 [metis "0.3.3"]
+
+                 ; Crypto
+                 [buddy/buddy-core "1.11.423"]
+                 [buddy/buddy-hashers "2.0.167"]
+
                  ; Database migrations library
                  ; Up and down migrations can be provided
                  [ragtime "0.8.0"]
@@ -51,7 +67,10 @@
                  ; For configuration management
                  [com.grammarly/omniconf "0.4.3"]
 
-                 ; For reponse formatting
+                 ; JSON encoder/decoder
+                 [metosin/jsonista "0.3.8"]
+
+                 ; For response formatting
                  [metosin/muuntaja "0.6.8"]
 
                  ; Logging libraries

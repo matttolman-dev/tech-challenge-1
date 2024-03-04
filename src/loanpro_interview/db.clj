@@ -1,9 +1,11 @@
 (ns loanpro-interview.db
-  (:require [next.jdbc :as jdbc]
+  (:require [clojure.java.io :as io]
+            [clojure.java.jdbc :as jdbc]
             [omniconf.core :as cfg]
             [ragtime.jdbc :as r]
             [ragtime.repl :as rr]
-            [loanpro-interview.conf :as conf]))
+            [loanpro-interview.conf :as conf]
+            [yesql.core :refer [defqueries]]))
 
 (defn- db-conf []
   (let [raw-conf {:dbtype (cfg/get :db :type)
@@ -19,7 +21,36 @@
 
 (def ^:private db (db-conf))
 
-(def ds (jdbc/get-datasource db))
+(def auth-levels
+  {:inactive-auth 10
+   :basic-auth    20
+   :secure-auth   30})
+
+(def operations
+  {:addition 1
+   :subtraction 2
+   :multiplication 3
+   :division 4
+   :square-root 5
+   :random-string 6})
+
+(defn is-operation? [op-name]
+  (contains? operations op-name))
+
+(defn op-to-id [op-name]
+  {:pre [(is-operation? op-name)]}
+  (get operations op-name))
+
+; DB queries are stored in the resources file
+; This allows for better IDE completion as well as tracking what queries are being ran
+; It also allows for DBAs to more easily audit and optimize queries
+
+(defqueries "queries/session.sql")
+(defqueries "queries/user.sql")
+(defqueries "queries/risk.sql")
+
+(defn get-connection []
+  (db-conf))
 
 ; The migrate function should not be ran on startup in a real environment
 ; (we don't want multiple servers migrating at once, or doing a migration
