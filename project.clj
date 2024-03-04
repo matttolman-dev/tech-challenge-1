@@ -70,6 +70,9 @@
                  ; JSON encoder/decoder
                  [metosin/jsonista "0.3.8"]
 
+                 ; Scheduler
+                 [jarohen/chime "0.3.3"]
+
                  ; For response formatting
                  [metosin/muuntaja "0.6.8"]
 
@@ -79,7 +82,8 @@
                  [org.slf4j/log4j-over-slf4j "2.0.12"]
                  [org.slf4j/jcl-over-slf4j "2.0.12"]
                  [org.slf4j/jul-to-slf4j "2.0.12"]
-                 [org.slf4j/slf4j-api "2.0.12"]]
+                 [org.slf4j/slf4j-api "2.0.12"]
+                 [org.clojure/tools.logging "1.3.0"]]
   :repl-options {:init-ns loanpro-interview.core}
   :aliases {"migrate" ["run" "-m" "loanpro-interview.db/migrate"]
             "rollback" ["run" "-m" "loanpro-interview.db/rollback"]

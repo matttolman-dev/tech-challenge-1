@@ -1,5 +1,6 @@
 (ns loanpro-interview.middleware
-  (:require [loanpro-interview.db :as db]
+  (:require [clojure.tools.logging :as log]
+            [loanpro-interview.db :as db]
             [buddy.core.hash :as hash]
             [buddy.core.codecs :as codec]
             [ksuid.core :as ksuid]
@@ -117,8 +118,8 @@
         (handler
           (assoc request :op-name op-name :op op-id))))))
 
-(defn log-operation
-  ([] (log-operation #(java.time.Instant/now)))
+(defn record-operation
+  ([] (record-operation #(java.time.Instant/now)))
   ([time-provider]
    (fn [handler]
      (fn [request]
@@ -133,3 +134,13 @@
                    {:status 402}
                    res))
                res))))))
+
+(defn log-request [handler]
+  (fn [request]
+    (let [tid (or (-> request :headers (get "tid"))
+                  (ksuid/to-string (ksuid/new-random)))]
+      (log/info (str "[request_start][tid=" tid "]"))
+      (let [res (handler (assoc request :tid tid))
+            {status :status} res]
+        (log/info (str "[request_end][tid=" tid "][status=" status "]"))
+        res))))

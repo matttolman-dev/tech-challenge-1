@@ -41,48 +41,47 @@
         {:status 401}))))
 
 (defn routes
-  ([] (routes db/get-connection))
-  ([db-conn-provider] (routes db-conn-provider #(java.time.Instant/now)))
-  ([db-conn-provider time-provider]
-   ["auth/"
-    {:middleware [rj/wrap-json-params
-                  rcc/coerce-request-middleware
-                  muuntaja/format-response-middleware
-                  m/params-to-keywords
-                  (m/with-connect-db db-conn-provider)
-                  m/risk-filter
-                  rcc/coerce-response-middleware]}
-    ["login"
-     {:post {:middleware [m/risk-logger]
-             :parameters {:form {:username string? :password string?}}
-             :responses  {204 {}
-                          401 {}
-                          429 {}}
-             :handler    (fn [req]
-                           (let [{params :params conn :conn} req
-                                 errs (login-validator params)]
-                             (if (not (empty? errs))
-                               {:status 400
-                                :body   errs}
-                               (login-user params conn))))}}]
-    ["signup"
-     {:post {:parameters {:json {:username string? :password string? :password-confirm string?}}
-             :responses  {204 {}
-                          400 {:body map?}
-                          429 {}}
-             :handler    (fn [req]
-                           (let [{params :params conn :conn} req
-                                 errs (new-user-validator params)]
-                             (if (not (empty? errs))
-                               {:status 400
-                                :body   errs}
-                               (let [id (ksuid/to-string (ksuid/new-random-with-time (time-provider)))
-                                     success? (not= 0 (db/create-user!
-                                       (-> params
-                                           (assoc :id id :password (hashers/derive (:password params)))
-                                           (dissoc :password-confirm))
-                                       {:connection conn}))]
-                                 (if success?
-                                   (login-user params conn)
-                                   {:status 400
-                                    :body {:username ["username taken"]}})))))}}]]))
+  [time-provider]
+  ["auth/"
+   {:middleware [m/risk-filter]}
+   ["login"
+    {:post {:middleware [m/risk-logger]
+            :parameters {:form {:username string? :password string?}}
+            :responses  {204 {}
+                         401 {}
+                         429 {}}
+            :handler    (fn [req]
+                          (let [{params :params conn :conn} req
+                                errs (login-validator params)]
+                            (if (not (empty? errs))
+                              {:status 400
+                               :body   errs}
+                              (login-user params conn))))}}]
+   ["signup"
+    {:post {:parameters {:json {:username string? :password string? :password-confirm string?}}
+            :responses  {204 {}
+                         400 {:body map?}
+                         429 {}}
+            :handler    (fn [req]
+                          (let [{params :params conn :conn} req
+                                errs (new-user-validator params)]
+                            (if (not (empty? errs))
+                              {:status 400
+                               :body   errs}
+                              (let [id (ksuid/to-string (ksuid/new-random-with-time (time-provider)))
+                                    success? (not= 0 (db/create-user!
+                                                       (-> params
+                                                           (assoc :id id :password (hashers/derive (:password params)))
+                                                           (dissoc :password-confirm))
+                                                       {:connection conn}))]
+                                (if success?
+                                  (login-user params conn)
+                                  {:status 400
+                                   :body   {:username ["username taken"]}})))))}}]
+   ["logout"
+    {:post {:responses {204 {}}
+            :handler (fn [req]
+                       (when-let [{{token :token} :session conn :conn} req]
+                         (db/clear-session! {:id token} {:connection conn}))
+                       {:status 204
+                        :session nil})}}]])

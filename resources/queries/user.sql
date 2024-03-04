@@ -7,7 +7,7 @@ SELECT id, password, status from users WHERE username = :username AND username <
 INSERT OR IGNORE INTO users (id, username, password, status) VALUES (:id, :username, :password, 1);
 
 -- name: user-balance
--- Gets the balance for the user
+-- Gets the balance for the user. All users start with $5.00 by default
 SELECT user_balance as balance, ctime
  FROM transactions
  WHERE user_id = :id
@@ -41,13 +41,12 @@ SELECT :txid, :user, :op, 1, -(SELECT cost FROM operations WHERE id = :op), :res
 
 -- name: add-balance!
 -- Adds a balance to a user and records a transaction
-BEGIN TRANSACTION;
-
-UPDATE users SET balance = balance + :amount WHERE id = :user;
-
-INSERT INTO transactions (id, operation_id, status, amount, operation_response, user_balance)
-SELECT :txid, NULL, 1, :amount, NULL, balance
-FROM users WHERE id = :user;
-
-COMMIT;
-END;
+INSERT INTO transactions (id, user_id, operation_id, status, amount, operation_response, user_balance)
+SELECT :txid, :user, NULL, 1, :amount, :res, balance + :amount
+FROM (SELECT user_balance as balance, ctime
+      FROM transactions
+      WHERE user_id = :user
+      UNION
+      SELECT 500 as user_balance, 0 as ctime
+      ORDER BY ctime DESC
+      LIMIT 1);
