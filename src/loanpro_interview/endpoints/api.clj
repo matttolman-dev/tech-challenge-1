@@ -6,13 +6,15 @@
             [loanpro-interview.middleware :as m]
             [reitit.ring.coercion :as rcc]
             [ksuid.core :as ksuid]
+            [org.httpkit.client :as http]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [ring.middleware.json :as rj]))
 
 (defn routes
   ([] (routes db/get-connection))
   ([db-conn-provider] (routes db-conn-provider #(ksuid/to-string (ksuid/new-random))))
-  ([db-conn-provider guid-provider]
+  ([db-conn-provider guid-provider] (routes db-conn-provider guid-provider http/get))
+  ([db-conn-provider guid-provider http-get]
    ["api/"
     {:middleware [(m/log-request guid-provider)
                   rj/wrap-json-params
@@ -21,6 +23,6 @@
                   (m/with-connect-db db-conn-provider)
                   rcc/coerce-response-middleware]}
     ["v1/"
-     (ops/routes guid-provider)
+     (ops/routes guid-provider http-get)
      (auth/routes guid-provider)
      (account/routes guid-provider)]]))

@@ -81,14 +81,18 @@ CREATE TABLE transactions
     amount INT NULL,
     operation_response TEXT NULL,
     user_balance INT NOT NULL CHECK ( user_balance >= 0 ),
-    ctime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ctime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -- Timestamps are only precise to the second in SQLite
+    -- Our ids are only precise to the second in ordering
+    -- So, we add an extra "order_id" to tell us how to order transactions for a user
+    order_id INT NOT NULL DEFAULT 1
 );
 --;;
 CREATE INDEX idx_transactions_user
 ON transactions (user_id);
 --;;
 CREATE INDEX idx_transactions_ctime
-ON transactions (ctime DESC);
+ON transactions (user_id, order_id DESC);
 --;;
 CREATE TABLE sessions
 (

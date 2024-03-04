@@ -7,7 +7,7 @@ SELECT COUNT(*) >= 8 as risky
                 AND (username_fingerprint = :uname
                   OR ip_fingerprint = :ip
                   OR device_fingerprint = :device)
-                AND attempt_time >= time('now', '-30 minutes');
+                AND time(attempt_time) >= time('now', '-30 minutes');
 
 -- name: auth-log-attempt!
 -- Logs an authentication attempt

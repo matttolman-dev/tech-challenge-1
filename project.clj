@@ -56,6 +56,9 @@
                  ; Data validation library
                  [metis "0.3.3"]
 
+                 ; Ring spec
+                 [ring/ring-spec "0.0.4"]
+
                  ; Crypto
                  [buddy/buddy-core "1.11.423"]
                  [buddy/buddy-hashers "2.0.167"]

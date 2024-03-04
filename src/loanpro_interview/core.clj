@@ -7,6 +7,7 @@
             [omniconf.core :as cfg]
             [reitit.ring :as ring]
             [ring.middleware.session]
+            [org.httpkit.client :as http]
             [ksuid.core :as ksuid]
             [reitit.ring.middleware.parameters :as parameters]
             [ring.middleware.session.cookie]
@@ -15,13 +16,15 @@
 
 ; Defining as a method so that changes to routes are reloaded in the REPL on server restart
 (defn app
-  ([] (app db/get-connection #(ksuid/to-string (ksuid/new-random))))
-  ([db-conn-provider guid-provider]
+  ([] (app db/get-connection))
+  ([db-conn-provider] (app db-conn-provider #(ksuid/to-string (ksuid/new-random))))
+  ([db-conn-provider guid-provider] (app db-conn-provider guid-provider http/get))
+  ([db-conn-provider guid-provider http-get]
    (ring/ring-handler
      (ring/router
        ; Because reitit works with data, we can simply nest routes from other files to get our full router
        ["/"
-        (api/routes db-conn-provider guid-provider)]
+        (api/routes db-conn-provider guid-provider http-get)]
        ; Global middleware
        {:data {:coercion   reitit.coercion.spec/coercion
                :muuntaja   m/instance
