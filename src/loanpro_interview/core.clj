@@ -2,7 +2,6 @@
   (:require [loanpro-interview.conf :as conf]
             [loanpro-interview.db :as db]
             [loanpro-interview.endpoints.api :as api]
-            [chime.core :refer [periodic-seq]]
             [muuntaja.core :as m]
             [org.httpkit.server :as hk-server]
             [omniconf.core :as cfg]
@@ -11,7 +10,7 @@
             [reitit.ring.middleware.parameters :as parameters]
             [ring.middleware.session.cookie]
             [clojure.tools.logging :as log])
-  (:import (java.time ZoneOffset)))
+  (:import (java.util.concurrent Executors TimeUnit)))
 
 ; Defining as a method so that changes to routes are reloaded in the REPL on server restart
 (defn app [] (ring/ring-handler
@@ -45,14 +44,29 @@
                                                                          {:key (byte-array (map byte (cfg/get :session :key)))})})
                    {:port (cfg/get :port)})))
 
+; Executor for background processes
+(defonce background-executor (Executors/newScheduledThreadPool 1))
+
+; Atom for cleanup thread
+(defonce cleanup-process (atom nil))
+
+; Used for REPL to stop cleanup process
+(defn stop-cleanup []
+  (when-let [process @cleanup-process]
+    (.cancel process false)))
+
+; Process to clean up stale sessions from the database
+(defn start-cleanup []
+  (stop-cleanup)
+  (reset! cleanup-process (-> background-executor
+                              (.scheduleAtFixedRate
+                                #(do
+                                   (log/debug "Cleaning up stale sessions")
+                                   (log/info (str "Cleaned up "
+                                                  (db/cleanup-sessions! {} {:connection (db/get-connection)})
+                                                  " stale sessions")))
+                                0 5 TimeUnit/SECONDS))))
+
 (defn -main [& args]
   (apply start-server args)
-  (->> (periodic-seq (java.time.Instant/now) (java.time.Duration/ofHours 1))
-       (filter (fn [_]
-                 (let [time (.atZone (java.time.Instant/now) (ZoneOffset/UTC))
-                       seconds (.getSecond time)
-                       minutes (.getMinute time)]
-                   (and (zero? seconds) (zero? minutes)))))
-       (map (fn [_]
-              (log/info "Cleaning up stale sessions")
-              (db/cleanup-sessions! {} {:connection (db/get-connection)})))))
+  (start-cleanup))

@@ -1,7 +1,5 @@
 (ns loanpro-interview.db
-  (:require [clojure.java.io :as io]
-            [clojure.java.jdbc :as jdbc]
-            [omniconf.core :as cfg]
+  (:require [omniconf.core :as cfg]
             [ragtime.jdbc :as r]
             [ragtime.repl :as rr]
             [loanpro-interview.conf :as conf]

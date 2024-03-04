@@ -42,7 +42,7 @@ SELECT :txid, :user, :op, 1, -(SELECT cost FROM operations WHERE id = :op), :res
 -- name: add-balance!
 -- Adds a balance to a user and records a transaction
 INSERT INTO transactions (id, user_id, operation_id, status, amount, operation_response, user_balance)
-SELECT :txid, :user, NULL, 1, :amount, :res, balance + :amount
+SELECT :txid, :user, NULL, 1, :amount, NULL, balance + :amount
 FROM (SELECT user_balance as balance, ctime
       FROM transactions
       WHERE user_id = :user

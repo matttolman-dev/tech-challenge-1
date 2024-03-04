@@ -1,24 +1,60 @@
 # Using IntelliJ's HTTP client format
-### Create User JSON
-POST {{host}}/auth/signup
+### Create User
+POST {{host}}/api/v1/auth/signup
 Content-Type: application/json
 
 {"username": "test1@example.com", "password": "Password1!", "password-confirm": "Password1!"}
 
-### Create User
-POST {{host}}/auth/signup
-Content-Type: application/x-www-form-urlencoded
-
-username=test2@example.com&password=Password1&password-confirm=Password1
-
 ### Login
-POST {{host}}/auth/login
-Content-Type: application/x-www-form-urlencoded
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
 
-username=test2@example.com&password=Password1
+{"username": "test1@example.com", "password":  "Password1!"}
+
+### Initial Balance
+GET {{host}}/api/v1/account/balance
+
+### Add Balance
+PUT {{host}}/api/v1/account/balance
+Content-Type: application/json
+
+{"amount": 100}
 
 ### Add
 POST {{host}}/api/v1/ops/add
 Content-Type: application/json
 
 {"x": 123, "y": 342}
+
+### Subtract
+POST {{host}}/api/v1/ops/subtract
+Content-Type: application/json
+
+{"x": 123, "y": 342}
+
+### Multiply
+POST {{host}}/api/v1/ops/multiply
+Content-Type: application/json
+
+{"x": 123, "y": 342}
+
+### Divide
+POST {{host}}/api/v1/ops/divide
+Content-Type: application/json
+
+{"x": 123, "y": 342}
+
+### Square Root
+POST {{host}}/api/v1/ops/square-root
+Content-Type: application/json
+
+{"x": 123}
+
+### Random String
+POST {{host}}/api/v1/ops/random-str
+
+### Ending Balance
+GET {{host}}/api/v1/account/balance
+
+### Logout
+POST {{host}}/api/v1/auth/logout

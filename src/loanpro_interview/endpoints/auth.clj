@@ -1,17 +1,12 @@
 (ns loanpro-interview.endpoints.auth
-  (:require [loanpro-interview.db :as db]
-            [omniconf.core :as cfg]
+  (:require [clojure.tools.logging :as log]
+            [loanpro-interview.db :as db]
             [reitit.coercion.spec]
-            [reitit.ring.coercion :as rcc]
-            [reitit.ring.middleware.muuntaja :as muuntaja]
             [loanpro-interview.middleware :as m]
-            [ksuid.core :as ksuid]
-            [ring.middleware.json :as rj]
             [buddy.hashers :as hashers]
             [buddy.core.nonce :as nonce]
             [buddy.core.codecs :as codec])
-  (:use [metis.core])
-  (:import (java.sql SQLIntegrityConstraintViolationException)))
+  (:use [metis.core]))
 
 (defvalidator new-user-validator
               [:username [:presence :email]]
@@ -35,17 +30,17 @@
                                    :level   (if (= status 1) (:basic-auth db/auth-levels)
                                                              (:inactive-auth db/auth-levels))}
                                   {:connection conn})
+              (log/info (str "[session_create_for=" user-id "]"))
               {:status  204
                :session {:token session-id}})
             {:status 401}))
         {:status 401}))))
 
 (defn routes
-  [time-provider]
+  [guid-provider]
   ["auth/"
-   {:middleware [m/risk-filter]}
    ["login"
-    {:post {:middleware [m/risk-logger]
+    {:post {:middleware [m/risk-filter m/risk-logger]
             :parameters {:form {:username string? :password string?}}
             :responses  {204 {}
                          401 {}
@@ -54,11 +49,14 @@
                           (let [{params :params conn :conn} req
                                 errs (login-validator params)]
                             (if (not (empty? errs))
-                              {:status 400
-                               :body   errs}
+                              (do
+                                (log/warn (str "[invalid_login_request]" (with-out-str (clojure.pprint/pprint errs))))
+                                {:status 400
+                                 :body   errs})
                               (login-user params conn))))}}]
    ["signup"
-    {:post {:parameters {:json {:username string? :password string? :password-confirm string?}}
+    {:post {:middleware [m/risk-filter]
+            :parameters {:json {:username string? :password string? :password-confirm string?}}
             :responses  {204 {}
                          400 {:body map?}
                          429 {}}
@@ -66,9 +64,11 @@
                           (let [{params :params conn :conn} req
                                 errs (new-user-validator params)]
                             (if (not (empty? errs))
-                              {:status 400
-                               :body   errs}
-                              (let [id (ksuid/to-string (ksuid/new-random-with-time (time-provider)))
+                              (do
+                                (log/warn (str "[invalid_signup_request]" (with-out-str (clojure.pprint/pprint errs))))
+                                {:status 400
+                                 :body   errs})
+                              (let [id (guid-provider)
                                     success? (not= 0 (db/create-user!
                                                        (-> params
                                                            (assoc :id id :password (hashers/derive (:password params)))
@@ -76,12 +76,16 @@
                                                        {:connection conn}))]
                                 (if success?
                                   (login-user params conn)
-                                  {:status 400
-                                   :body   {:username ["username taken"]}})))))}}]
+                                  (do
+                                    (let [errs {:username ["username taken"]}]
+                                      (log/warn (str "[invalid_signup_request]" (with-out-str (clojure.pprint/pprint errs))))
+                                      {:status 400
+                                       :body errs})))))))}}]
    ["logout"
     {:post {:responses {204 {}}
-            :handler (fn [req]
-                       (when-let [{{token :token} :session conn :conn} req]
-                         (db/clear-session! {:id token} {:connection conn}))
-                       {:status 204
-                        :session nil})}}]])
+            :handler   (fn [req]
+                         (when-let [{{token :token} :session conn :conn} req]
+                           (db/clear-session! {:id token} {:connection conn})
+                           (log/info "[session_ended]"))
+                         {:status  204
+                          :session nil})}}]])

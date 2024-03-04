@@ -67,11 +67,11 @@
                  ; For configuration management
                  [com.grammarly/omniconf "0.4.3"]
 
+                 ; Useful core extensions
+                 [org.apache.commons/commons-lang3 "3.14.0"]
+
                  ; JSON encoder/decoder
                  [metosin/jsonista "0.3.8"]
-
-                 ; Scheduler
-                 [jarohen/chime "0.3.3"]
 
                  ; For response formatting
                  [metosin/muuntaja "0.6.8"]

@@ -5,11 +5,11 @@
             [org.httpkit.client :as http]))
 
 (defn routes
-  []
+  [guid-provider]
   ["ops/"
    {:middleware [(m/with-validate-session)
                  m/can-do-operation?
-                 (m/record-operation)]}
+                 (m/record-operation guid-provider)]}
    ["add" {:post {:parameters {:json {:x number?, :y number?}}
                   :responses  {200 {:body {:res number?}}
                                402 {}}
@@ -41,18 +41,18 @@
    ["square-root" {:post {:parameters {:json {:x number?}}
                           :responses  {200 {:body {:res number?}}
                                        402 {}}
-                          :handler    (fn [{{:keys [x y]} :params}]
+                          :handler    (fn [{{:keys [x]} :params}]
                                         {:status 200
                                          :body   {:res (math/sqrt x)}})
                           :op-name    :square-root}}]
    ["random-str" {:post {:responses {200 {:body {:res string?}}
                                      402 {}}
-                         :handler   (fn []
+                         :handler   (fn [_]
                                       (let [rnd-res @(http/get "https://www.random.org/strings/?num=1&len=10&digits=on&upperalpha=on&loweralpha=on&format=plain&rnd=new")
                                             {status :status body :body} rnd-res]
                                         (if (not= status 200)
                                           {:status status}
                                           {:status 200
-                                           :body   {:res body}})))
+                                           :body   {:res (clojure.string/trim body)}})))
                          :op-name   :random-string}}]
    ])
