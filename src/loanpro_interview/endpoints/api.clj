@@ -15,9 +15,8 @@
   ([db-conn-provider] (routes db-conn-provider #(ksuid/to-string (ksuid/new-random))))
   ([db-conn-provider guid-provider] (routes db-conn-provider guid-provider http/get))
   ([db-conn-provider guid-provider http-get]
-   ["api/"
-    {:middleware [(m/log-request guid-provider)
-                  rj/wrap-json-params
+   ["/"
+    {:middleware [rj/wrap-json-params
                   m/params-to-keywords
                   muuntaja/format-response-middleware
                   (m/with-connect-db db-conn-provider)

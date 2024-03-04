@@ -2,7 +2,8 @@
   (:require [loanpro-interview.conf :as conf]
             [loanpro-interview.db :as db]
             [loanpro-interview.endpoints.api :as api]
-            [muuntaja.core :as m]
+            [loanpro-interview.middleware :as m]
+            [muuntaja.core :as mc]
             [org.httpkit.server :as hk-server]
             [omniconf.core :as cfg]
             [reitit.ring :as ring]
@@ -22,13 +23,18 @@
   ([db-conn-provider guid-provider http-get]
    (ring/ring-handler
      (ring/router
-       ; Because reitit works with data, we can simply nest routes from other files to get our full router
-       ["/"
-        (api/routes db-conn-provider guid-provider http-get)]
+       [""
+        ["" {:get {:handler (fn [_] {:status 302 :headers {"location" "/ui/index.html"}})}}]
+        ["/" {:get {:handler (fn [_] {:status 302 :headers {"location" "/ui/index.html"}})}}]
+        ; Because reitit works with data, we can simply nest routes from other files to get our full router
+        ["/api"
+         (api/routes db-conn-provider guid-provider http-get)]
+        ["/ui/*" (ring/create-resource-handler)]]
        ; Global middleware
        {:data {:coercion   reitit.coercion.spec/coercion
-               :muuntaja   m/instance
-               :middleware [parameters/parameters-middleware]}}))))
+               :muuntaja   mc/instance
+               :middleware [parameters/parameters-middleware
+                            (m/log-request guid-provider)]}}))))
 
 ; Defining this for REPL interactions (allows stopping/starting server)
 (defonce server (atom nil))
@@ -72,7 +78,7 @@
                                    (log/info (str "Cleaned up "
                                                   (db/cleanup-sessions! {} {:connection (db/get-connection)})
                                                   " stale sessions")))
-                                0 5 TimeUnit/SECONDS))))
+                                0 1 TimeUnit/HOURS))))
 
 (defn -main [& args]
   (apply start-server args)
