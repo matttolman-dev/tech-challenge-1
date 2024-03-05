@@ -11,7 +11,6 @@ function load() {
     credentials: "include"
   })
     .then(async res => {
-      console.log(res)
       if (res.status == 401 || res.status == 403) {
         account.requireLogin()
       } else {

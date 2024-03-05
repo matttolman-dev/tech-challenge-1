@@ -53,12 +53,13 @@ FROM (SELECT user_balance as balance, order_id
 
 -- name: history
 -- Gets the history for a user
-SELECT t.id as id, t.order_id as cursor, o.type as operation, t.user_balance as balance, t.status as status, t.amount as amount, t.operation_response as response FROM transactions t
+SELECT t.ctime as time, t.id as id, t.order_id as cursor, o.type as operation, t.user_balance as balance, t.status as status, t.amount as amount, t.operation_response as response FROM transactions t
            LEFT JOIN operations o ON t.operation_id = o.id
 WHERE user_id = :user AND order_id > :cursor
 ORDER BY order_id ASC
 LIMIT :page_size;
 
--- name: history-end
+-- name: history-bounds
 -- Gets the size of history for a user
-SELECT order_id as id FROM transactions WHERE user_id = :user ORDER BY order_id DESC LIMIT 1;
+SELECT MIN(order_id) as start, MAX(order_id) as end
+FROM transactions WHERE user_id = :user;

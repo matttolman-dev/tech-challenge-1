@@ -105,6 +105,12 @@ export const useHistoryStore = defineStore('history', {
   state: () => ({
     loading: true,
     items: [],
-    cursor: null
+    cursor: null,
+    next: true,
+    start: 1,
+    end: Number.MAX_SAFE_INTEGER,
+    error: null,
+    pageSize: 10,
+    page: 1
   })
 })

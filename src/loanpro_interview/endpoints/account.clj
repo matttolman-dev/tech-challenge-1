@@ -22,19 +22,21 @@
 
 (defn history [req]
   (let [{conn :conn user-id :user-id {cursor :cursor page-size :num} :params} req
-        query {:user user-id :cursor (parse-long (or cursor "0")) :page_size (parse-long (or page-size "1"))}]
+        query {:user user-id :cursor (parse-long (or cursor "0")) :page_size (parse-long (or page-size "10"))}]
     (if (< (:cursor query) 0)
       {:status 400
        :body   {:cursor "invalid"}}
       (if (< (:page_size query) 1)
         {:status 400
          :body   {:page-size "invalid"}}
-        (let [history-end (db/history-end {:user user-id} {:connection conn})
+        (let [history-bounds (db/history-bounds {:user user-id} {:connection conn})
               history (db/history query {:connection conn})
               max-history (apply max (cons 0 (map #(:cursor %) history)))
-              end-history (or (-> history-end first :id) 0)]
+              {end-history :end start-history :start} (first history-bounds)]
           {:status 200
            :body   {:more    (< max-history end-history)
+                    :start start-history
+                    :end end-history
                     :cursor  max-history
                     :history (map (fn [e]
                                     (assoc e :response (j/read-value (:response e)))) history)}})))))

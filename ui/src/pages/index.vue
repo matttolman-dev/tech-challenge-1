@@ -3,6 +3,8 @@
   <div v-if="!isNaN(account.balance)">
     <v-responsive max-width="344" class="mx-auto mt-4">
       <Calculator/>
+    </v-responsive>
+    <v-responsive max-width="650" class="mx-auto mt-4">
       <History/>
     </v-responsive>
   </div>
