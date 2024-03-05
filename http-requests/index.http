@@ -56,6 +56,9 @@ POST {{host}}/api/v1/ops/random-str
 ### History
 GET {{host}}/api/v1/account/history?num=2&cursor=2
 
+### History
+GET {{host}}/api/v1/account/history?num=2&cursor=0&filter=ad
+
 ### Ending Balance
 GET {{host}}/api/v1/account/balance
 

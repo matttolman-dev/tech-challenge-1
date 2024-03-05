@@ -110,6 +110,8 @@ export const useHistoryStore = defineStore('history', {
     start: 1,
     end: Number.MAX_SAFE_INTEGER,
     error: null,
+    search: null,
+    length: 1,
     pageSize: 10,
     page: 1
   })
