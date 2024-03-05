@@ -50,3 +50,15 @@ FROM (SELECT user_balance as balance, order_id
       SELECT 500 as user_balance, 0 as order_id
       ORDER BY order_id DESC
       LIMIT 1);
+
+-- name: history
+-- Gets the history for a user
+SELECT t.id as id, t.order_id as cursor, o.type as operation, t.user_balance as balance, t.status as status, t.amount as amount, t.operation_response as response FROM transactions t
+           LEFT JOIN operations o ON t.operation_id = o.id
+WHERE user_id = :user AND order_id > :cursor
+ORDER BY order_id ASC
+LIMIT :page_size;
+
+-- name: history-end
+-- Gets the size of history for a user
+SELECT order_id as id FROM transactions WHERE user_id = :user ORDER BY order_id DESC LIMIT 1;

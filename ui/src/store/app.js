@@ -100,3 +100,11 @@ export const useAccountStore = defineStore('account', {
     }
   }
 })
+
+export const useHistoryStore = defineStore('history', {
+  state: () => ({
+    loading: true,
+    items: [],
+    cursor: null
+  })
+})

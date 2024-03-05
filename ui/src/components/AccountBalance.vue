@@ -54,7 +54,16 @@ function submit() {
           <v-form v-model="addFunds.form" @submit.prevent="submit">
             Current Funds: ${{Math.floor(account.balance / 100)}}.{{account.balance % 100}}
             <v-text-field :rules="[num]" v-model="addFunds.amount" type="number" label="Amount to add ($)" persistent-hint class="mt-2" />
-            <v-btn :loading="addFunds.loading" :disabled="!addFunds.form" type="submit" class="bg-primary">Add Funds</v-btn>
+            <v-container>
+              <v-row>
+                <v-col>
+                  <v-btn :disabled="addFunds.loading" @click="addFunds.reset()" class="bg-grey-lighten-4" block>Cancel</v-btn>
+                </v-col>
+                <v-col>
+                  <v-btn :loading="addFunds.loading" :disabled="!addFunds.form" type="submit" class="bg-primary" block>Add Funds</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
           </v-form>
         </v-card-text>
       </v-card>

@@ -168,95 +168,93 @@ window.onkeydown = keydown
 </script>
 
 <template>
-  <v-responsive id="calc" max-width="344" class="mx-auto mt-4">
-    <v-container class="border bg-grey-darken-2" tabindex="0">
-      <v-row>
-        <v-col class="bg-grey-lighten-3 text-right">
-          {{ calc.cur || calc.res }}
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="6">
-          <v-btn :loading="calc.loading" @click="button('clear')" class="bg-orange" block>C</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('sqrt')" class="bg-yellow" block>&#x221A;</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('/')" class="bg-yellow" block>&#x00f7;</v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('7')" class="bg-grey" block>7</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('8')" class="bg-grey" block>8</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('9')" class="bg-grey" block>9</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('*')" class="bg-yellow" block>&#x00d7;</v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('4')" class="bg-grey" block>4</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('5')" class="bg-grey" block>5</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('6')" class="bg-grey" block>6</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('-')" class="bg-yellow" block>&#x2212;</v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('3')" class="bg-grey" block>3</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('2')" class="bg-grey" block>2</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('1')" class="bg-grey" block>1</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('+')" class="bg-yellow" block>&#x002b;</v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="6">
-          <v-btn :loading="calc.loading" @click="button('0')" class="bg-grey" block>0</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('.')" class="bg-grey pt-4" block>&#x2022;</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="button('=')" class="bg-yellow" block>=</v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-alert closable class="bg-error mt-2 mb-2" v-if="calc.error" :text="calc.error"></v-alert>
-    <v-divider class="mt-4 mb-4"/>
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-btn :loading="calc.loading" @click="random()" class="bg-primary" block>
-            Generate Random Text
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          {{ calc.text }}
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-responsive>
+  <v-container class="border bg-grey-darken-2" tabindex="0">
+    <v-row>
+      <v-col class="bg-grey-lighten-3 text-right">
+        {{ calc.cur || calc.res }}
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="6">
+        <v-btn :loading="calc.loading" @click="button('clear')" class="bg-orange" block>C</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('sqrt')" class="bg-yellow" block>&#x221A;</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('/')" class="bg-yellow" block>&#x00f7;</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('7')" class="bg-grey" block>7</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('8')" class="bg-grey" block>8</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('9')" class="bg-grey" block>9</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('*')" class="bg-yellow" block>&#x00d7;</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('4')" class="bg-grey" block>4</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('5')" class="bg-grey" block>5</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('6')" class="bg-grey" block>6</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('-')" class="bg-yellow" block>&#x2212;</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('3')" class="bg-grey" block>3</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('2')" class="bg-grey" block>2</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('1')" class="bg-grey" block>1</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('+')" class="bg-yellow" block>&#x002b;</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="6">
+        <v-btn :loading="calc.loading" @click="button('0')" class="bg-grey" block>0</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('.')" class="bg-grey pt-4" block>&#x2022;</v-btn>
+      </v-col>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="button('=')" class="bg-yellow" block>=</v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-alert closable class="bg-error mt-2 mb-2" v-if="calc.error" :text="calc.error"></v-alert>
+  <v-divider class="mt-4 mb-4"/>
+  <v-container>
+    <v-row>
+      <v-col>
+        <v-btn :loading="calc.loading" @click="random()" class="bg-primary" block>
+          Generate Random Text
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        {{ calc.text }}
+      </v-col>
+    </v-row>
+  </v-container>
 
 </template>
 
