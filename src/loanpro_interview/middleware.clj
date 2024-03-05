@@ -304,3 +304,15 @@
 (s/fdef log-request
         :args (s/cat :guid-provider ::guid-provider)
         :ret ::middleware)
+
+(defn cors [permit]
+  (fn [handler]
+    (fn [request]
+      (let [res (if (= :options (:request-method request))
+                  {:status 200}
+                  (handler request))]
+        (-> res
+            (assoc-in [:headers "access-control-allow-origin"] permit)
+            (assoc-in [:headers "access-control-allow-headers"] "*")
+            (assoc-in [:headers "access-control-allow-methods"] "Cookies,device-id,origin,user-agent,accept-encoding,accept-language")
+            (assoc-in [:headers "access-control-allow-credentials"] true))))))

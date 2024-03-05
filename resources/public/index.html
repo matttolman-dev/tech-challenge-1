@@ -11,15 +11,24 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <div id="app">{{message}}</div>
 <script>
-    const { createApp } = Vue
+    const { createApp, $emit, defineAsyncComponent } = Vue
 
-    createApp({
-        data() {
-            return {
-                message: 'Hello Vue!'
-            }
-        },
-    }).mount('#app')
+    const app = createApp({
+            data() {
+                return {
+                    message: 'Hello Vue!'
+                }
+            },
+        });
+
+    app.component(
+        'BalanceComponent',
+        {
+            emits: ['insufficientAuth'],
+        }
+    )
+
+    app.mount('#app')
 </script>
 </body>
 </html>

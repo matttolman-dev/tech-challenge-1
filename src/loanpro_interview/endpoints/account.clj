@@ -9,7 +9,7 @@
 
 (defn add-balance [guid-provider]
   (fn [{user-id :user-id conn :conn {amount :amount} :params}]
-    (if (<= amount 0)
+    (if (or (not (number? amount)) (<= amount 0))
       (do
         (log/warn (str "[invalid_amount][amount=" amount "]"))
         {:status 400

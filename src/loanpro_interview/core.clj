@@ -34,7 +34,8 @@
        {:data {:coercion   reitit.coercion.spec/coercion
                :muuntaja   mc/instance
                :middleware [parameters/parameters-middleware
-                            (m/log-request guid-provider)]}}))))
+                            (m/log-request guid-provider)
+                            (m/cors ["*"])]}}))))
 
 ; Defining this for REPL interactions (allows stopping/starting server)
 (defonce server (atom nil))
@@ -55,6 +56,7 @@
   (reset! server (hk-server/run-server
                    (ring.middleware.session/wrap-session (app) {:store (ring.middleware.session.cookie/cookie-store
                                                                          {:key (byte-array (map byte (cfg/get :session :key)))})})
+
                    {:port (cfg/get :port)})))
 
 ; Executor for background processes
