@@ -54,7 +54,7 @@ Content-Type: application/json
 POST {{host}}/api/v1/ops/random-str
 
 ### History
-GET {{host}}/api/v1/account/history?num=2&cursor=2
+GET {{host}}/api/v1/account/history?num=2&page=3
 
 ### History
 GET {{host}}/api/v1/account/history?num=2&cursor=0&filter=ad

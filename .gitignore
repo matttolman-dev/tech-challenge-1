@@ -16,3 +16,4 @@ pom.xml.asc
 .idea/
 .DS_Store
 node_modules
+resources/config.edn

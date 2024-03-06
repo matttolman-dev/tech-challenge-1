@@ -3,7 +3,9 @@ import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore('app', {
   state: () => ({
-    root: "http://localhost:8080"
+    // For local development (in standalone vue) uncomment this line and comment the next line
+    // root: "http://localhost:8080",
+    root: ""
   }),
 })
 
@@ -59,14 +61,36 @@ export const useAddFundsStore = defineStore('addFunds', {
 
 export const useCalcStore = defineStore('calc', {
   state: () => ({
-    res: 0,
+    res: null,
     cur: '',
     op: '',
+    clear: false,
+    overwrite: false,
     loading: false,
     moreFunds: false,
     error: null,
     text: ''
-  })
+  }),
+  actions: {
+    reset() {
+      this.cur = ''
+      this.res = null
+      this.op = ''
+      this.clear = false
+      this.overwrite = false
+      this.loading = false
+      this.moreFunds = false
+      this.error = false
+      this.text = ''
+    },
+    clearCalc() {
+      this.cur = ''
+      this.res = null
+      this.op = ''
+      this.clear = false
+      this.overwrite = false
+    }
+  }
 })
 
 export const useAccountStore = defineStore('account', {
@@ -81,6 +105,8 @@ export const useAccountStore = defineStore('account', {
     requireLogin() {
       this.needLogin = true
       this.balance = NaN
+      this.loading = true
+      this.error = null
     },
     login() {
       this.needLogin = false
@@ -105,14 +131,26 @@ export const useHistoryStore = defineStore('history', {
   state: () => ({
     loading: true,
     items: [],
-    cursor: null,
-    next: true,
-    start: 1,
-    end: Number.MAX_SAFE_INTEGER,
     error: null,
     search: null,
     length: 1,
     pageSize: 10,
-    page: 1
-  })
+    page: 1,
+    timeout: null
+  }),
+  actions: {
+    reset() {
+      this.loading = true
+      this.items = []
+      this.error = null
+      this.search = null
+      this.length = 1
+      this.pageSize = 10
+      this.page = 1
+      if (this.timeout != null) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = null
+    }
+  }
 })

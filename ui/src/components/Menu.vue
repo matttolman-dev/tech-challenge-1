@@ -1,8 +1,13 @@
 <script setup>
-import {useAccountStore} from "@/store/app";
+import {useAccountStore, useAppStore} from "@/store/app";
 const account = useAccountStore()
+const app = useAppStore()
 
 let loading = false
+
+/**
+ * Logout the user
+ */
 function logout() {
   loading = true
   fetch(`${app.root}/api/v1/auth/logout`, {

@@ -91,4 +91,5 @@
   :repl-options {:init-ns loanpro-interview.core}
   :aliases {"migrate" ["run" "-m" "loanpro-interview.db/migrate"]
             "rollback" ["run" "-m" "loanpro-interview.db/rollback"]
-            "db-reset" ["run" "-m" "loanpro-interview.db/reset"]})
+            "db-reset" ["run" "-m" "loanpro-interview.db/reset"]
+            "create-conf" ["run" "-m" "loanpro-interview.conf/create-conf"]})

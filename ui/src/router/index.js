@@ -5,10 +5,17 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
+import { createRouter, createWebHashHistory } from 'vue-router/auto'
+import Index from "@/pages/index.vue";
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(),
+  routes: [
+    {
+      path: '/',
+      component: Index
+    }
+  ]
 })
 
 export default router

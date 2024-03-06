@@ -1,7 +1,8 @@
 (ns loanpro-interview.conf
-  (:require [omniconf.core :as cfg]
+  (:require [buddy.core.codecs :as codec]
+            [omniconf.core :as cfg]
+            [buddy.core.nonce]
             [clojure.java.io :as io]))
-
 (cfg/define
   {:port       {:description "HTTP Port"
                 :type        :number
@@ -62,3 +63,9 @@
         ; If something goes wrong, release the "loaded" lock so that we can retry later
         (reset! loaded false)
         (throw e)))))
+
+; Used to create config files in docker
+(defn create-conf [& args]
+  (with-open [file (io/writer "resources/config.edn")]
+    (.write file (pr-str {:session {:key (subs (codec/bytes->b64-str (buddy.core.nonce/random-bytes 24)) 0 16)}
+                          :users   {:pwd-key (codec/bytes->b64-str (buddy.core.nonce/random-bytes 24))}}))))

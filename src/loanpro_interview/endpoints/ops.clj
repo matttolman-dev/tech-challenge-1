@@ -4,11 +4,11 @@
             [loanpro-interview.middleware :as m]
             [clojure.math :as math]))
 
-(s/def ::x number?)
+(s/def ::x (s/and string? (s/* #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \.})))
 
-(s/def ::y number?)
+(s/def ::y (s/and string? (s/* #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \.})))
 
-(s/def :num/res number?)
+(s/def :num/res (s/and string? (s/* #{\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \.})))
 
 (s/def :str/res string?)
 
@@ -24,52 +24,43 @@
 
 (defn add [{{:keys [x y]} :params}]
   {:status 200
-   :body   {:res (+ x y)}})
+   :body   {:res (-> (+ (new BigDecimal x) (new BigDecimal y)) .toString)}})
 
 (s/fdef add
         :args (s/cat :request (s/keys :req-un [:xy/params]))
-        :ret (s/keys :req [:num/body])
-        :fn (s/and #(= (:ret %) (+ (-> % :args :params :x)
-                                   (-> % :args :params :y)))))
+        :ret (s/keys :req [:num/body]))
 
 (defn subtract [{{:keys [x y]} :params}]
   {:status 200
-   :body   {:res (- x y)}})
+   :body   {:res (-> (- (new BigDecimal x) (new BigDecimal y)) .toString)}})
 
 (s/fdef subtract
         :args (s/cat :request (s/keys :req-un [:xy/params]))
-        :ret (s/keys :req [:num/body])
-        :fn (s/and #(= (:ret %) (- (-> % :args :params :x)
-                                   (-> % :args :params :y)))))
+        :ret (s/keys :req [:num/body]))
 
 (defn multiply [{{:keys [x y]} :params}]
   {:status 200
-   :body   {:res (* x y)}})
+   :body   {:res (-> (* (new BigDecimal x) (new BigDecimal y)) .toString)}})
 
 (s/fdef multiply
         :args (s/cat :request (s/keys :req-un [:xy/params]))
-        :ret (s/keys :req [:num/body])
-        :fn (s/and #(= (:ret %) (* (-> % :args :params :x)
-                                   (-> % :args :params :y)))))
+        :ret (s/keys :req [:num/body]))
 
 (defn divide [{{:keys [x y]} :params}]
   {:status 200
-   :body   {:res (/ x y)}})
+   :body   {:res (-> (/ (new BigDecimal x) (new BigDecimal y)) .toString)}})
 
 (s/fdef divide
         :args (s/cat :request (s/keys :req-un [:xy/params]))
-        :ret (s/keys :req [:num/body])
-        :fn (s/and #(= (:ret %) (/ (-> % :args :params :x)
-                                   (-> % :args :params :y)))))
+        :ret (s/keys :req [:num/body]))
 
 (defn square-root [{{:keys [x]} :params}]
   {:status 200
-   :body   {:res (math/sqrt x)}})
+   :body   {:res (-> (math/sqrt (new BigDecimal x)) .toString)}})
 
 (s/fdef square-root
         :args (s/cat :request (s/keys :req-un [:x/params]))
-        :ret (s/keys :req [:num/body])
-        :fn (s/and #(= (:ret %) (math/sqrt (-> % :args :params :x)))))
+        :ret (s/keys :req [:num/body]))
 
 (defn random-str [http-get]
   (fn [_]
@@ -90,28 +81,29 @@
    {:middleware [(m/with-validate-session)
                  m/can-do-operation?
                  (m/record-operation guid-provider)]}
-   ["add" {:post {:parameters {:json {:x number?, :y number?}}
-                  :responses  {200 {:body {:res number?}}
+   ; Using string? so we can avoid IEEE-754 rounding issues
+   ["add" {:post {:parameters {:json {:x string?, :y string?}}
+                  :responses  {200 {:body {:res string?}}
                                402 {}}
                   :handler    add
                   :op-name :addition}}]
-   ["subtract" {:post {:parameters {:json {:x number?, :y number?}}
-                       :responses  {200 {:body {:res number?}}
+   ["subtract" {:post {:parameters {:json {:x string?, :y string?}}
+                       :responses  {200 {:body {:res string?}}
                                     402 {}}
                        :handler    subtract
                        :op-name    :subtraction}}]
-   ["multiply" {:post {:parameters {:json {:x number?, :y number?}}
-                       :responses  {200 {:body {:res number?}}
+   ["multiply" {:post {:parameters {:json {:x string?, :y string?}}
+                       :responses  {200 {:body {:res string?}}
                                     402 {}}
                        :handler    multiply
                        :op-name    :multiplication}}]
-   ["divide" {:post {:parameters {:json {:x number?, :y number?}}
-                     :responses  {200 {:body {:res number?}}
+   ["divide" {:post {:parameters {:json {:x string?, :y string?}}
+                     :responses  {200 {:body {:res string?}}
                                   402 {}}
                      :handler    divide
                      :op-name    :division}}]
-   ["square-root" {:post {:parameters {:json {:x number?}}
-                          :responses  {200 {:body {:res number?}}
+   ["square-root" {:post {:parameters {:json {:x string?}}
+                          :responses  {200 {:body {:res string?}}
                                        402 {}}
                           :handler    square-root
                           :op-name    :square-root}}]

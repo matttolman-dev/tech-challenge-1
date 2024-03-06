@@ -5,10 +5,19 @@ const account = useAccountStore()
 const addFunds = useAddFundsStore()
 const app = useAppStore()
 
+/**
+ * Validates a string is a correct number
+ * @param value
+ * @returns {null|string}
+ */
 function num(value) {
-  return +value > 0 ? null : 'Invalid value! Amount must be greater than zero!'
+  const parsed = +value
+  return Number.isFinite(parsed) && parsed > 0 ? null : 'Invalid value! Amount must be greater than zero!'
 }
 
+/**
+ * Submits the account balance form
+ */
 function submit() {
   addFunds.loading = true
   fetch(`${app.root}/api/v1/account/balance`, {
@@ -53,7 +62,7 @@ function submit() {
         <v-card-text>
           <v-form v-model="addFunds.form" @submit.prevent="submit">
             Current Funds: ${{Math.floor(account.balance / 100)}}.{{account.balance % 100}}
-            <v-text-field :rules="[num]" v-model="addFunds.amount" type="number" label="Amount to add ($)" persistent-hint class="mt-2" />
+            <v-text-field clearable :rules="[num]" v-model="addFunds.amount" type="number" label="Amount to add ($)" persistent-hint class="mt-2" />
             <v-container>
               <v-row>
                 <v-col>

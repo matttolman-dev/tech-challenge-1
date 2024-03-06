@@ -17,4 +17,5 @@ DELETE FROM sessions WHERE session_id = :id;
 
 -- name: cleanup-sessions!
 -- Clears old sessions from storage
-DELETE FROM sessions WHERE ctime < time('now', '-40 hours');
+DELETE FROM sessions
+       WHERE time('now', '-40 hours') > time(ctime);

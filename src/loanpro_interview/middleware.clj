@@ -148,11 +148,9 @@
 (defn get-fingerprints [request]
   "Gets all fingerpritns for a request"
   (let [uname (get-fingerprint (or (-> request :params :username) "<none>"))
-        ip (get-fingerprint (or (-> request :remote-addr) "127.0.0.1"))
-        device (get-fingerprint (or (-> request :headers (get "device-id" (-> request :headers (get "user-agent")))) "<unknown>"))]
+        ip (get-fingerprint (or (-> request :remote-addr) "127.0.0.1"))]
     {:uname  uname
-     :ip     ip
-     :device device}))
+     :ip     ip}))
 
 (s/fdef get-fingerprints
         :args (s/cat :request ::ring-request)
@@ -312,7 +310,7 @@
                   {:status 200}
                   (handler request))]
         (-> res
-            (assoc-in [:headers "access-control-allow-origin"] permit)
-            (assoc-in [:headers "access-control-allow-headers"] "*")
-            (assoc-in [:headers "access-control-allow-methods"] "Cookies,device-id,origin,user-agent,accept-encoding,accept-language")
+            (assoc-in [:headers "access-control-allow-origin"] "http://localhost:3000")
+            (assoc-in [:headers "access-control-allow-headers"] "Cookies,device-id,origin,user-agent,accept-encoding,accept-language,content-type")
+            (assoc-in [:headers "access-control-allow-methods"] "*")
             (assoc-in [:headers "access-control-allow-credentials"] true))))))

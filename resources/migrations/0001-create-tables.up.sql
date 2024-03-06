@@ -130,7 +130,6 @@ CREATE TABLE auth_events
     -- IP of remote address (useful for correlating events)
     ip_fingerprint TEXT NOT NULL,
     attempt_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    device_fingerprint TEXT NOT NULL,
     -- We're mostly interested in failed attempts vs successful attempts
     attempt_success INT NOT NULL
 );

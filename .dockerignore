@@ -17,3 +17,4 @@ pom.xml.asc
 .DS_Store
 .git
 ui/node_modules/
+resources/public/

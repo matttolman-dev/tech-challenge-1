@@ -73,7 +73,7 @@ FROM (SELECT user_balance as balance, order_id
 -- Gets the history for a user
 SELECT t.ctime              as time,
        t.id                 as id,
-       t.order_id           as cursor,
+       t.order_id           as 'order',
        o.type               as operation,
        t.user_balance       as balance,
        t.status             as status,
@@ -82,13 +82,22 @@ SELECT t.ctime              as time,
 FROM transactions t
          LEFT JOIN operations o ON t.operation_id = o.id
 WHERE user_id = :user
-  AND order_id > :cursor
-ORDER BY order_id ASC
-LIMIT :page_size;
+-- Using a descending sort to show the most recent history item first
+ORDER BY order_id DESC
+LIMIT :page_size
+    -- The offset model isn't very efficient since it still retrieves the skipped entries
+    -- However, it does let us easily use a "skip to page" pagination
+    -- A more efficient solution would be to return a cursor and use that
+    -- For instance, our order id can be a cursor
+    -- The downside is that our pagination would have to be linear and not random access
+    -- Or we would have to use infinite scrolling instead (which also doesn't need as much bounds detection)
+    -- Personally, I would use infinite scrolling for the history, but the ask was to
+    --   implement pagination specifically, so I went with the offset model
+OFFSET :page_size * :page;
 
 -- name: history-bounds
 -- Gets the size of history for a user
-SELECT MIN(order_id) as start, MAX(order_id) as end
+SELECT COUNT(*) as total
 FROM transactions
 WHERE user_id = :user;
 
@@ -96,7 +105,7 @@ WHERE user_id = :user;
 -- Searches history for a user
 SELECT t.ctime              as time,
        t.id                 as id,
-       t.order_id           as cursor,
+       t.order_id           as 'order',
        o.type               as operation,
        t.user_balance       as balance,
        t.status             as status,
@@ -108,17 +117,17 @@ WHERE user_id = :user
   AND (o.type LIKE :filter
       OR t.operation_response LIKE :filter
       OR (t.operation_id IS NULL AND 'added funds' LIKE :filter))
-ORDER BY order_id ASC
+ORDER BY order_id DESC
 LIMIT :page_size
-OFFSET :page_size * (:cursor);
+OFFSET :page_size * :page;
 
 -- name: search-bounds
 -- Gets the boundaries for a search
-SELECT MIN(order_id) as start, MAX(order_id) as end, COUNT(*) as total
+SELECT COUNT(*) as total
 FROM transactions t
          LEFT JOIN operations o ON t.operation_id = o.id
 WHERE user_id = :user
   AND (o.type LIKE :filter
     OR t.operation_response LIKE :filter
     OR (t.operation_id IS NULL AND 'added funds' LIKE :filter))
-ORDER BY order_id ASC;
+ORDER BY order_id DESC;

@@ -5,19 +5,24 @@
             [loanpro-interview.endpoints.ops :refer :all]))
 
 (deftest add-test
-  (stest/check `add))
+  (is (= (-> (add {:params {:x "0.1" :y "0.2"}}) :body :res) "0.3"))
+  (is (= (-> (add {:params {:x "1" :y "2"}}) :body :res) "3")))
 
 (deftest subtract-test
-  (stest/check `subtract))
+  (is (= (-> (subtract {:params {:x "0.1" :y "0.2"}}) :body :res) "-0.1"))
+  (is (= (-> (subtract {:params {:x "1" :y "2"}}) :body :res) "-1")))
 
 (deftest multiply-test
-  (stest/check `multiply))
+  (is (= (-> (multiply {:params {:x "0.2" :y "0.2"}}) :body :res) "0.04"))
+  (is (= (-> (multiply {:params {:x "3" :y "2"}}) :body :res) "6")))
 
 (deftest divide-test
-  (stest/check `divide))
+  (is (= (-> (divide {:params {:x "0.3" :y "2"}}) :body :res) "0.15"))
+  (is (= (-> (divide {:params {:x "1" :y "2"}}) :body :res) "0.5")))
 
 (deftest square-root-test
-  (stest/check `square-root))
+  (is (= (-> (square-root {:params {:x "0.04"}}) :body :res) "0.2"))
+  (is (= (-> (square-root {:params {:x "4"}}) :body :res) "2.0")))
 
 (deftest random-str-test
   (let [http-get (fn [_] (atom {:status 200 :body "abcdefg"}))]

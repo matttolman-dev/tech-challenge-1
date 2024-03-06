@@ -46,7 +46,9 @@ export default defineConfig({
       vueTemplate: true,
     }),
   ],
-  define: { 'process.env': {} },
+  define: { 'process.env': {
+    BASE_URL: '/ui/'
+    } },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -64,4 +66,10 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  // For local development (in standalone vue), comment this out
+  base: '/ui/',
+  // For local development (in server), uncomment this
+  // build: {
+  //   outDir: '../resources/public'
+  // }
 })

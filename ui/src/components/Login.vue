@@ -7,17 +7,31 @@ const app = useAppStore()
 
 const loginData = useLoginStore()
 
+/**
+ * Validates email addresses
+ * @param value {string}
+ * @returns {null|string}
+ */
 function emailValidate(value) {
   loginData.serverError = null
   return Joi.object({Email: Joi.string().required().email({tlds: {allow: false}})}).validate({Email: value}).error?.message
 }
 
-
+/**
+ * Validates passwords
+ * @param value {string}
+ * @returns {null|string}
+ */
 function passwordValidate(value) {
   loginData.serverError = null
   return Joi.object({Password: Joi.string().min(8).required()}).validate({Password: value}).error?.message
 }
 
+/**
+ * Password confirmation validation
+ * @param value
+ * @returns {null|string}
+ */
 function confirmValidate(value) {
   loginData.serverError = null
   if (value !== loginData.password) {
@@ -26,6 +40,9 @@ function confirmValidate(value) {
   return null
 }
 
+/**
+ * Handles form submission
+ */
 function onSubmit() {
   if (!loginData.form || emailValidate(loginData.email) || passwordValidate(loginData.password)) {
     return
@@ -76,7 +93,8 @@ function onSubmit() {
           return;
         }
         case 429: {
-          loginData.serverError = 'Too many attempts, your account is locked for 30 minnutes'
+          // 429 is our account/ip lock
+          loginData.serverError = 'Too many attempts, your account is locked for 30 minutes'
           return
         }
         default: {

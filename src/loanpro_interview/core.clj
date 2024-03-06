@@ -34,8 +34,9 @@
        {:data {:coercion   reitit.coercion.spec/coercion
                :muuntaja   mc/instance
                :middleware [parameters/parameters-middleware
-                            (m/log-request guid-provider)
-                            (m/cors ["*"])]}}))))
+                            ; For local development (in standalone vue), uncomment the following
+                            ;(m/cors ["*"])
+                            (m/log-request guid-provider)]}}))))
 
 ; Defining this for REPL interactions (allows stopping/starting server)
 (defonce server (atom nil))
