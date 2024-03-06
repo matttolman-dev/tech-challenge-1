@@ -1,22 +1,58 @@
-# loanpro-interview
+# Technical Challenge
+By Matthew Tolman
 
-A Clojure library designed to ... well, that part is up to you.
 
-## Usage
+## Running Locally
 
-FIXME
+The project comes with a dockerfile which takes care of building the UI,
+initializing the database and deploying the full project.
 
-## License
+The UI and backend live in the same docker container and can be accessed
+from the same URL.
 
-Copyright © 2024 FIXME
+The only configuration that docker needs is the port to bind to. It will
+generate the rest of the configuration automatically. Below are the
+commands to run:
 
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
+```bash
+docker build -t mtolman-tech-challenge .
+docker run -p 38080:8080 -it mtolman-tech-challenge
+```
 
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.
+Then open up http://localhost:38080.
+
+You will need to create an account using the UI. No accounts are created
+by default.
+
+### Running without docker
+
+To run without docker, you need to first install [leiningen](https://leiningen.org/)
+and [Node](https://nodejs.org/en). Then run the following commands:
+
+```bash
+mkdir -p resources/public && \
+cd ui/ && \
+npm i && \
+npm run build && \
+cp -r dist/* ../resources/public/ && \
+cd .. && \
+lein create-conf && \
+lein migrate && \
+lein run
+```
+
+You can then access the app at http://localhost:8080.
+
+## Tech Stack
+
+For the backend I'm using Clojure with [http-kit](https://github.com/http-kit/http-kit)
+as the Java Server and [Reitit](https://github.com/metosin/reitit) as the router. [Logback](https://logback.qos.ch/)
+over SL4j is used for logging. [Buddy](https://github.com/funcool/buddy) is
+used for cryptography (e.g. password hashing, secret generation, etc.). [SQLite](https://www.sqlite.org/)
+is used for the database. I'm also using [Omniconf](https://github.com/grammarly/omniconf) for configuration
+management and [KSuid](https://github.com/segmentio/ksuid) for ID generation.
+
+For the frontend I'm using [Vue](https://www.sqlite.org/) and [Vuetify](https://vuetifyjs.com/en/).
+
+
+
